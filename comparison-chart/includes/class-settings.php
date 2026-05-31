@@ -6,12 +6,14 @@ defined( 'ABSPATH' ) || exit;
  *
  * Settings > Comparison Chart. Manages:
  *   - Which post types the schema/values metaboxes appear on.
+ *   - Which taxonomies get term-level schema metaboxes (taxonomy mode).
  *   - Bricks support toggle.
  *   - When Bricks support is OFF: all chart styling controls live here, applied
  *     globally to every shortcode-rendered chart.
  *
  * Option key: sdb_sc_settings (array)
  *   post_types:    string[]
+ *   taxonomies:    string[]  — taxonomies that get term-level schema metaboxes
  *   bricks:        bool      — register the Bricks custom element
  *   style:         array     — global style controls used in shortcode mode
  */
@@ -66,6 +68,17 @@ class SDB_SC_Settings {
 			$clean['post_types'] = [ 'page' ];
 		}
 
+		// Taxonomies (taxonomy mode)
+		$registered_taxes = array_keys( self::get_eligible_taxonomies() );
+		$clean['taxonomies'] = [];
+		if ( ! empty( $input['taxonomies'] ) && is_array( $input['taxonomies'] ) ) {
+			foreach ( $input['taxonomies'] as $tax ) {
+				if ( in_array( $tax, $registered_taxes, true ) ) {
+					$clean['taxonomies'][] = $tax;
+				}
+			}
+		}
+
 		// Bricks toggle
 		$clean['bricks'] = ! empty( $input['bricks'] );
 
@@ -93,17 +106,19 @@ class SDB_SC_Settings {
 	public function render_page(): void {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 
-		$opts          = get_option( self::OPTION_KEY, [] );
-		$saved_pts     = self::get_saved_post_types();
-		$eligible      = self::get_eligible_post_types();
-		$bricks_on     = self::bricks_enabled();
-		$bricks_active = class_exists( '\Bricks\Elements' ) || defined( 'BRICKS_VERSION' );
-		$style         = self::get_style();
+		$opts             = get_option( self::OPTION_KEY, [] );
+		$saved_pts        = self::get_saved_post_types();
+		$eligible         = self::get_eligible_post_types();
+		$saved_taxes      = self::get_saved_taxonomies();
+		$eligible_taxes   = self::get_eligible_taxonomies();
+		$bricks_on        = self::bricks_enabled();
+		$bricks_active    = class_exists( '\Bricks\Elements' ) || defined( 'BRICKS_VERSION' );
+		$style            = self::get_style();
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Comparison Chart Settings', 'comparison-chart' ); ?></h1>
 			<p class="description" style="margin-bottom:20px;max-width:680px">
-				<?php esc_html_e( 'Build a comparison chart by creating a parent post (which defines the rows) and child posts (each becomes a column). Configure where the editor fields appear, and choose how the chart is placed on the page.', 'comparison-chart' ); ?>
+				<?php esc_html_e( 'The plugin supports two modes that can coexist on the same site. Post Hierarchy mode: a parent post defines the rows; child posts each become a column. Taxonomy mode: a taxonomy term defines the rows; top-level posts assigned to that term each become a column.', 'comparison-chart' ); ?>
 			</p>
 
 			<form method="post" action="options.php">
@@ -131,6 +146,32 @@ class SDB_SC_Settings {
 									</label>
 								<?php endforeach; ?>
 							</fieldset>
+						</td>
+					</tr>
+				</table>
+
+				<h2 class="title"><?php esc_html_e( 'Taxonomy Mode', 'comparison-chart' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Choose which taxonomies get a Row Schema metabox on their term edit screens. Posts assigned to those terms (with no post parent) become chart columns automatically.', 'comparison-chart' ); ?></p>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Enabled taxonomies', 'comparison-chart' ); ?></th>
+						<td>
+							<?php if ( empty( $eligible_taxes ) ) : ?>
+								<p class="description"><?php esc_html_e( 'No public taxonomies found.', 'comparison-chart' ); ?></p>
+							<?php else : ?>
+								<fieldset>
+									<?php foreach ( $eligible_taxes as $slug => $label ) :
+										$checked = in_array( $slug, $saved_taxes, true ) ? 'checked' : '';
+										?>
+										<label style="display:block;margin-bottom:8px">
+											<input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[taxonomies][]" value="<?php echo esc_attr( $slug ); ?>" <?php echo esc_attr( $checked ); ?> />
+											<strong><?php echo esc_html( $label ); ?></strong>
+											<code style="font-size:11px;opacity:.7"><?php echo esc_html( $slug ); ?></code>
+										</label>
+									<?php endforeach; ?>
+								</fieldset>
+								<p class="description" style="margin-top:8px"><?php esc_html_e( 'Use the shortcode [comparison_chart term="term-slug" taxonomy="taxonomy-slug"] to render a taxonomy-mode chart, or just [comparison_chart] on a post that belongs to one of these terms.', 'comparison-chart' ); ?></p>
+							<?php endif; ?>
 						</td>
 					</tr>
 				</table>
@@ -337,6 +378,25 @@ class SDB_SC_Settings {
 			if ( $b === 'page' ) return 1;
 			return strcmp( $a, $b );
 		} );
+		return $result;
+	}
+
+	public static function get_saved_taxonomies(): array {
+		$opts = get_option( self::OPTION_KEY, [] );
+		return isset( $opts['taxonomies'] ) && is_array( $opts['taxonomies'] )
+			? $opts['taxonomies']
+			: [];
+	}
+
+	public static function get_eligible_taxonomies(): array {
+		$taxes   = get_taxonomies( [ 'public' => true ], 'objects' );
+		$result  = [];
+		$exclude = [ 'post_format', 'nav_menu', 'link_category', 'wp_theme', 'wp_template_part_area' ];
+		foreach ( $taxes as $slug => $obj ) {
+			if ( in_array( $slug, $exclude, true ) ) continue;
+			$result[ $slug ] = $obj->labels->singular_name ?: $slug;
+		}
+		ksort( $result );
 		return $result;
 	}
 }

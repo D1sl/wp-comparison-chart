@@ -27,9 +27,19 @@ class SDB_SC_Values_Metabox {
         }
         if ( ! $post instanceof WP_Post ) return;
 
-        // Header + Values boxes appear ONLY on child posts (those with a parent).
-        // Parent posts manage schema; orphan posts get nothing.
-        if ( sdb_sc_post_role( $post->ID ) !== 'child' ) return;
+        $role = sdb_sc_post_role( $post->ID );
+
+        // Post-hierarchy mode: show on child posts only.
+        $show = ( $role === 'child' );
+
+        // Taxonomy mode: also show on top-level posts that belong to at least
+        // one term (from an enabled taxonomy) that has a schema defined.
+        if ( ! $show && $role === 'none' ) {
+            $terms_with_schema = sdb_sc_get_terms_with_schema_for_post( $post->ID );
+            $show = ! empty( $terms_with_schema );
+        }
+
+        if ( ! $show ) return;
 
         add_meta_box(
             'sdb_sc_service_header',
@@ -58,13 +68,22 @@ class SDB_SC_Values_Metabox {
         $post_types = SDB_SC_Settings::get_saved_post_types();
         if ( ! in_array( $screen->post_type, $post_types, true ) ) return;
 
-        // Pass schema to JS so the values metabox can react to schema changes
         global $post;
         if ( ! $post ) return;
-        $schema_src = sdb_sc_values_schema_source( $post->ID );
-        if ( ! $schema_src ) return; // parent post — no values box
 
-        $schema = sdb_sc_get_schema( $schema_src );
+        // Determine schema source — post-hierarchy or taxonomy mode.
+        $schema_src = sdb_sc_values_schema_source( $post->ID );
+        if ( $schema_src ) {
+            $schema = sdb_sc_get_schema( $schema_src );
+        } else {
+            // Taxonomy mode: merge schemas from all matching terms.
+            $schema    = [];
+            $terms_ws  = sdb_sc_get_terms_with_schema_for_post( $post->ID );
+            foreach ( $terms_ws as $term ) {
+                $schema = array_merge( $schema, sdb_sc_get_term_schema( $term->term_id ) );
+            }
+            if ( empty( $schema ) ) return;
+        }
 
         wp_enqueue_script(
             'sdb-sc-values-admin',
@@ -75,7 +94,7 @@ class SDB_SC_Values_Metabox {
         );
         wp_localize_script( 'sdb-sc-values-admin', 'SDB_SC_Schema', [
             'schema'    => $schema,
-            'parent_id' => $schema_src,
+            'parent_id' => $schema_src ?? 0,
         ] );
     }
 
@@ -83,9 +102,14 @@ class SDB_SC_Values_Metabox {
 
     public function render_header( WP_Post $post ): void {
         $schema_src = sdb_sc_values_schema_source( $post->ID );
+        // In taxonomy mode there's no post-hierarchy schema source, but the box
+        // is still valid — proceed as long as we're showing it at all.
         if ( ! $schema_src ) {
-            echo '<p style="color:#888;font-style:italic">Only shown on child posts.</p>';
-            return;
+            $terms_ws = sdb_sc_get_terms_with_schema_for_post( $post->ID );
+            if ( empty( $terms_ws ) ) {
+                echo '<p style="color:#888;font-style:italic">Only shown on child posts or posts assigned to a term with a schema.</p>';
+                return;
+            }
         }
 
         wp_nonce_field( 'sdb_sc_header_save', 'sdb_sc_header_nonce' );
@@ -118,18 +142,33 @@ class SDB_SC_Values_Metabox {
         <?php
     }
 
-    // ── Render: values (driven by parent schema) ──────────────────────────────
+    // ── Render: values (driven by parent schema or term schema) ──────────────
 
     public function render_values( WP_Post $post ): void {
         $schema_src = sdb_sc_values_schema_source( $post->ID );
-        if ( ! $schema_src ) {
-            echo '<p style="color:#888;font-style:italic">Values are entered on child posts. Use the Row Schema box on the parent to define columns.</p>';
-            return;
+
+        if ( $schema_src ) {
+            // Post-hierarchy mode.
+            $schema      = sdb_sc_get_schema( $schema_src );
+            $source_desc = __( 'the parent post', 'comparison-chart' );
+        } else {
+            // Taxonomy mode: collect and merge schemas from all matching terms.
+            $terms_ws = sdb_sc_get_terms_with_schema_for_post( $post->ID );
+            if ( empty( $terms_ws ) ) {
+                echo '<p style="color:#888;font-style:italic">Values are entered on child posts or on posts assigned to a term that has a Row Schema.</p>';
+                return;
+            }
+            $schema      = [];
+            $term_names  = [];
+            foreach ( $terms_ws as $term ) {
+                $schema      = array_merge( $schema, sdb_sc_get_term_schema( $term->term_id ) );
+                $term_names[] = esc_html( $term->name );
+            }
+            $source_desc = implode( ', ', $term_names );
         }
 
-        $schema = sdb_sc_get_schema( $schema_src );
         if ( empty( $schema ) ) {
-            echo '<p style="color:#888;font-style:italic">No rows defined on the parent post yet. Add rows there first, then return here to fill in values.</p>';
+            echo '<p style="color:#888;font-style:italic">No rows defined yet. Add rows to the schema first, then return here to fill in values.</p>';
             return;
         }
 
@@ -140,8 +179,10 @@ class SDB_SC_Values_Metabox {
         ?>
         <div id="sdb-sc-values-wrap">
             <p class="description" style="margin-bottom:16px">
-                Fill in values for each comparison row defined on the parent post.
-                These drive the comparison widget columns.
+                <?php
+                /* translators: %s: source name (parent post title or term names) */
+                printf( esc_html__( 'Fill in values for each comparison row defined on %s. These drive the comparison widget columns.', 'comparison-chart' ), $source_desc ); // phpcs:ignore WordPress.Security.EscapeOutput
+                ?>
             </p>
             <table class="form-table sdb-sc-values-table">
                 <?php foreach ( $schema as $row ) : ?>
@@ -260,7 +301,12 @@ class SDB_SC_Values_Metabox {
         if ( ! current_user_can( $cap, $post_id ) ) return;
 
         $schema_src = sdb_sc_values_schema_source( $post_id );
-        if ( ! $schema_src ) return; // parent post — values handled by its children
+
+        if ( ! $schema_src ) {
+            // Taxonomy mode: check whether this post is a taxonomy-mode column.
+            $terms_ws = sdb_sc_get_terms_with_schema_for_post( $post_id );
+            if ( empty( $terms_ws ) ) return; // truly no schema — nothing to save
+        }
 
         // Header
         if (
@@ -279,7 +325,15 @@ class SDB_SC_Values_Metabox {
             isset( $_POST['sdb_sc_values_nonce'] ) &&
             wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['sdb_sc_values_nonce'] ) ), 'sdb_sc_values_save' )
         ) {
-            $schema = sdb_sc_get_schema( $schema_src );
+            if ( $schema_src ) {
+                $schema = sdb_sc_get_schema( $schema_src );
+            } else {
+                $schema   = [];
+                $terms_ws = sdb_sc_get_terms_with_schema_for_post( $post_id );
+                foreach ( $terms_ws as $term ) {
+                    $schema = array_merge( $schema, sdb_sc_get_term_schema( $term->term_id ) );
+                }
+            }
             $raw    = $_POST['sdb_sc_val'] ?? []; // phpcs:ignore
             $clean  = [];
 

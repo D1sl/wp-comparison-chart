@@ -66,38 +66,7 @@ function sdb_sc_values_schema_source( int $post_id ): ?int {
 function sdb_sc_get_schema( int $page_id ): array {
     $raw = get_post_meta( $page_id, '_sdb_sc_schema', true );
     if ( empty( $raw ) || ! is_array( $raw ) ) return [];
-
-    $allowed_types    = [ 'text', 'pills', 'rating', 'meter', 'bool' ];
-    $allowed_variants = [ '', 'display', 'quote' ];
-    $allowed_icons    = [ '', 'star' ];
-
-    $clean = [];
-    foreach ( $raw as $row ) {
-        if ( empty( $row['key'] ) || empty( $row['label'] ) ) continue;
-        $type = in_array( $row['type'] ?? '', $allowed_types, true ) ? $row['type'] : 'text';
-        $r    = [
-            'key'   => sanitize_key( $row['key'] ),
-            'label' => sanitize_text_field( $row['label'] ),
-            'type'  => $type,
-        ];
-        if ( $type === 'text' ) {
-            $variant = $row['variant'] ?? '';
-            if ( in_array( $variant, $allowed_variants, true ) && $variant !== '' ) {
-                $r['variant'] = $variant;
-            }
-        }
-        if ( in_array( $type, [ 'rating', 'meter' ], true ) ) {
-            $r['max'] = isset( $row['max'] ) ? max( 1, (int) $row['max'] ) : 5;
-        }
-        if ( $type === 'rating' ) {
-            $icon = $row['icon'] ?? '';
-            if ( in_array( $icon, $allowed_icons, true ) && $icon !== '' ) {
-                $r['icon'] = $icon;
-            }
-        }
-        $clean[] = $r;
-    }
-    return $clean;
+    return sdb_sc_get_schema_from_raw( $raw );
 }
 
 /**
@@ -162,6 +131,7 @@ function sdb_sc_get_service_header( int $page_id ): array {
 
 /**
  * Build the full JS config array for a given page (parent or child).
+ * Uses post-hierarchy mode.
  *
  * @param  int $current_id  The page currently being rendered.
  * @return array|null       Config array ready for wp_json_encode, or null on failure.
@@ -220,6 +190,158 @@ function sdb_sc_build_config( int $current_id ): ?array {
     return [
         'currentServiceId' => $current_svc_id, // null on parent/category pages
         'storageKey'       => 'sdb-svc-' . $schema_id,
+        'columnWidth'      => 188,
+        'labelWidth'       => 156,
+        'currentLabel'     => ! empty( $widget_meta['current_label'] ) ? sanitize_text_field( $widget_meta['current_label'] ) : 'Current',
+        'rows'             => $schema,
+        'services'         => $services,
+    ];
+}
+
+// ── Taxonomy mode helpers ─────────────────────────────────────────────────────
+
+/**
+ * Shared schema validation used by both post and term schema getters.
+ *
+ * @param  array $raw  Raw unvalidated schema array.
+ * @return array       Validated schema.
+ */
+function sdb_sc_get_schema_from_raw( array $raw ): array {
+    $allowed_types    = [ 'text', 'pills', 'rating', 'meter', 'bool' ];
+    $allowed_variants = [ '', 'display', 'quote' ];
+    $allowed_icons    = [ '', 'star' ];
+
+    $clean = [];
+    foreach ( $raw as $row ) {
+        if ( empty( $row['key'] ) || empty( $row['label'] ) ) continue;
+        $type = in_array( $row['type'] ?? '', $allowed_types, true ) ? $row['type'] : 'text';
+        $r    = [
+            'key'   => sanitize_key( $row['key'] ),
+            'label' => sanitize_text_field( $row['label'] ),
+            'type'  => $type,
+        ];
+        if ( $type === 'text' ) {
+            $variant = $row['variant'] ?? '';
+            if ( in_array( $variant, $allowed_variants, true ) && $variant !== '' ) {
+                $r['variant'] = $variant;
+            }
+        }
+        if ( in_array( $type, [ 'rating', 'meter' ], true ) ) {
+            $r['max'] = isset( $row['max'] ) ? max( 1, (int) $row['max'] ) : 5;
+        }
+        if ( $type === 'rating' ) {
+            $icon = $row['icon'] ?? '';
+            if ( in_array( $icon, $allowed_icons, true ) && $icon !== '' ) {
+                $r['icon'] = $icon;
+            }
+        }
+        $clean[] = $r;
+    }
+    return $clean;
+}
+
+/**
+ * Retrieve the row schema stored on a taxonomy term.
+ *
+ * @param  int $term_id
+ * @return array
+ */
+function sdb_sc_get_term_schema( int $term_id ): array {
+    $raw = get_term_meta( $term_id, '_sdb_sc_schema', true );
+    if ( empty( $raw ) || ! is_array( $raw ) ) return [];
+    return sdb_sc_get_schema_from_raw( $raw );
+}
+
+/**
+ * Find all taxonomy terms (from enabled taxonomies) that have a schema defined,
+ * and that the given post is assigned to. Returns an array of WP_Term objects.
+ *
+ * @param  int $post_id
+ * @return WP_Term[]
+ */
+function sdb_sc_get_terms_with_schema_for_post( int $post_id ): array {
+    $enabled_taxes = SDB_SC_Settings::get_saved_taxonomies();
+    if ( empty( $enabled_taxes ) ) return [];
+
+    $matching = [];
+    foreach ( $enabled_taxes as $taxonomy ) {
+        $terms = wp_get_post_terms( $post_id, $taxonomy, [ 'fields' => 'all' ] );
+        if ( is_wp_error( $terms ) ) continue;
+        foreach ( $terms as $term ) {
+            $schema = sdb_sc_get_term_schema( $term->term_id );
+            if ( ! empty( $schema ) ) {
+                $matching[] = $term;
+            }
+        }
+    }
+    return $matching;
+}
+
+/**
+ * Build the full JS config array for a taxonomy-mode chart.
+ *
+ * @param  int    $term_id    The term whose schema drives the chart.
+ * @param  string $taxonomy   The taxonomy slug.
+ * @param  int    $current_id Optional post ID to pin as "current" column (0 = none).
+ * @return array|null
+ */
+function sdb_sc_build_config_for_term( int $term_id, string $taxonomy, int $current_id = 0 ): ?array {
+    $schema = sdb_sc_get_term_schema( $term_id );
+    if ( empty( $schema ) ) return null;
+
+    $post_types = SDB_SC_Settings::get_saved_post_types();
+
+    // Columns: published top-level (no post parent) posts assigned to this term.
+    $columns = get_posts( [
+        'post_type'      => $post_types,
+        'post_status'    => 'publish',
+        'post_parent'    => 0,
+        'posts_per_page' => -1,
+        'orderby'        => 'menu_order title',
+        'order'          => 'ASC',
+        'no_found_rows'  => true,
+        'tax_query'      => [ // phpcs:ignore WordPress.DB.SlowDBQuery
+            [
+                'taxonomy' => $taxonomy,
+                'field'    => 'term_id',
+                'terms'    => $term_id,
+            ],
+        ],
+    ] );
+
+    if ( empty( $columns ) ) return null;
+
+    $services       = [];
+    $current_svc_id = null;
+
+    foreach ( $columns as $post ) {
+        $pid    = (int) $post->ID;
+        $svc_id = 'svc-' . $pid;
+        $header = sdb_sc_get_service_header( $pid );
+        $vals   = sdb_sc_get_values( $pid, $schema );
+
+        $svc = [
+            'id'    => $svc_id,
+            'name'  => $header['name'],
+            'price' => $header['price'],
+            'badge' => $header['badge'] !== '' ? $header['badge'] : null,
+        ];
+        foreach ( $vals as $k => $v ) {
+            $svc[ $k ] = $v;
+        }
+        $services[] = $svc;
+
+        if ( $current_id && $pid === $current_id ) {
+            $current_svc_id = $svc_id;
+        }
+    }
+
+    $widget_meta = get_term_meta( $term_id, '_sdb_sc_widget', true );
+    $widget_meta = is_array( $widget_meta ) ? $widget_meta : [];
+
+    return [
+        'currentServiceId' => $current_svc_id,
+        'storageKey'       => 'sdb-term-' . $term_id,
         'columnWidth'      => 188,
         'labelWidth'       => 156,
         'currentLabel'     => ! empty( $widget_meta['current_label'] ) ? sanitize_text_field( $widget_meta['current_label'] ) : 'Current',
