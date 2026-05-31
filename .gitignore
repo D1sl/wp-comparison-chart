@@ -32,5 +32,8 @@ Thumbs.db
 *.swo
 *~
 
+# Release packages
+*.zip
+
 # Logs
 *.log
