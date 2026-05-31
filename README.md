@@ -6,25 +6,25 @@ A WordPress plugin that renders an interactive, drag-to-reorder comparison chart
 
 ## Screenshots
 
-![Chart preview — frontend comparison table](.github/screenshots/Chart%20Preview.png)
+![Chart preview: frontend comparison table](.github/screenshots/Chart%20Preview.png)
 *Frontend chart with a pinned "You're Here" column, drag-to-reorder toggle buttons, and mixed row types.*
 
-![Schema setup — defining rows on a parent post or term](.github/screenshots/Chart%20Setup.png)
-*Schema editor on a parent post or taxonomy term — define rows, types, and options.*
+![Schema setup: defining rows on a parent post or term](.github/screenshots/Chart%20Setup.png)
+*Schema editor on a parent post or taxonomy term. Define rows, types, and options.*
 
-![Values metabox — filling in values on a column post](.github/screenshots/Chart%20Values.png)
-*Values metabox on a column post — each row type renders its own input.*
+![Values metabox: filling in values on a column post](.github/screenshots/Chart%20Values.png)
+*Values metabox on a column post. Each row type renders its own input.*
 
 ## How it works
 
-The plugin supports two modes that can coexist on the same site. The mode is determined by how data is structured — no global switch needed.
+The plugin supports two modes that can coexist on the same site. The mode is determined by how data is structured, no global switch needed.
 
 ### Post hierarchy mode
 
 Uses WordPress's native parent/child post relationship:
 
-- **Parent post** — defines the comparison rows (the schema). Each row has a label, a type, and type-specific options.
-- **Child posts** — each becomes a column in the chart, filling in values for every row defined by the parent.
+- **Parent post** defines the comparison rows (the schema). Each row has a label, a type, and type-specific options.
+- **Child posts** each become a column in the chart, filling in values for every row defined by the parent.
 
 When the chart is rendered on a child post's page, that column is automatically pinned so visitors can compare it against the others.
 
@@ -32,8 +32,8 @@ When the chart is rendered on a child post's page, that column is automatically 
 
 Uses a taxonomy term to group posts into a chart:
 
-- **Taxonomy term** — defines the comparison rows (the schema), set on the term's edit screen.
-- **Top-level posts assigned to that term** — each becomes a column, filling in values for every row defined by the term.
+- **Taxonomy term** defines the comparison rows (the schema), set on the term's edit screen.
+- **Top-level posts assigned to that term** each become a column, filling in values for every row defined by the term.
 
 Enable taxonomy mode for a specific taxonomy under **Settings → Comparison Chart → Taxonomy Mode**. Any number of taxonomies can be enabled simultaneously.
 
@@ -65,7 +65,7 @@ Enable taxonomy mode for a specific taxonomy under **Settings → Comparison Cha
 
 ### Post hierarchy mode
 
-1. Create a **parent post** — this is your comparison page. Publish it first so its children can be attached.
+1. Create a **parent post** as your comparison page. Publish it first so its children can be attached.
 2. Create **child posts** by setting the parent post in the page attributes. Each child becomes one column.
 3. On the parent post's edit screen, use the **Comparison Chart Settings** metabox to define your rows.
 4. On each child post's edit screen, fill in the **Comparison Chart Values** metabox.
@@ -73,7 +73,7 @@ Enable taxonomy mode for a specific taxonomy under **Settings → Comparison Cha
 ### Taxonomy mode
 
 1. Go to **Settings → Comparison Chart** and enable the taxonomy under **Taxonomy Mode**.
-2. Edit any term in that taxonomy — a **Comparison Chart** section will appear at the bottom. Define your rows there.
+2. Edit any term in that taxonomy. A **Comparison Chart** section will appear at the bottom. Define your rows there.
 3. Each top-level post assigned to that term will now show a **Comparison Chart Values** metabox. Fill in values for each post.
 
 ### Displaying the chart
@@ -118,14 +118,14 @@ Found at **Settings → Comparison Chart**.
 
 ### Style options (shortcode mode)
 
-- Primary colour — drives headers, row tints, and borders.
-- Secondary colour — pills, ratings, meters, and checkmarks. Falls back to primary if blank.
+- Primary colour drives headers, row tints, and borders.
+- Secondary colour for pills, ratings, meters, and checkmarks. Falls back to primary if blank.
 - Body text colour
 - Body and heading font families (CSS `font-family` values)
 - Pill / button border radius
 - Minimum column width (px)
 - Label column width (px)
-- Full-bleed scroll — lets the chart scroll edge-to-edge beyond its container, with a configurable gutter.
+- Full-bleed scroll lets the chart scroll edge-to-edge beyond its container, with a configurable gutter.
 
 ## Requirements
 
