@@ -30,8 +30,8 @@
 
 .sdb-sc-row-placeholder {
   height: 52px;
-  background: #f0f6ff;
-  border: 2px dashed #a8c4e8;
+  background: color-mix(in srgb, var(--wp-admin-theme-color) 8%, #fff);
+  border: 2px dashed color-mix(in srgb, var(--wp-admin-theme-color) 45%, #fff);
   border-radius: 5px;
 }
 
@@ -134,7 +134,7 @@
 }
 .sdb-sc-star-label.active,
 .sdb-sc-star-label.hover {
-  color: #b07d52;
+  color: var(--wp-admin-theme-color);
 }
 .sdb-sc-star-label:hover { transform: scale(1.15); }
 
@@ -147,7 +147,7 @@
 
 /* Meter slider */
 .sdb-sc-meter-slider {
-  accent-color: #b07d52;
+  accent-color: var(--wp-admin-theme-color);
 }
 .sdb-sc-meter-output {
   font-size: 13px;
