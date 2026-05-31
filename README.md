@@ -4,6 +4,14 @@ A WordPress plugin that renders an interactive, drag-to-reorder comparison chart
 
 **Author:** Benjamin Keaton
 
+## Screenshots
+
+![Chart preview — frontend comparison table](.github/screenshots/Chart%20Preview.png)
+
+![Schema setup — defining rows on a parent post or term](.github/screenshots/Chart%20Setup.png)
+
+![Values metabox — filling in values on a column post](.github/screenshots/Chart%20Values.png)
+
 ## How it works
 
 The plugin supports two modes that can coexist on the same site. The mode is determined by how data is structured — no global switch needed.
