@@ -7,10 +7,13 @@ A WordPress plugin that renders an interactive, drag-to-reorder comparison chart
 ## Screenshots
 
 ![Chart preview — frontend comparison table](.github/screenshots/Chart%20Preview.png)
+*Frontend chart with a pinned "You're Here" column, drag-to-reorder toggle buttons, and mixed row types.*
 
 ![Schema setup — defining rows on a parent post or term](.github/screenshots/Chart%20Setup.png)
+*Schema editor on a parent post or taxonomy term — define rows, types, and options.*
 
 ![Values metabox — filling in values on a column post](.github/screenshots/Chart%20Values.png)
+*Values metabox on a column post — each row type renders its own input.*
 
 ## How it works
 
