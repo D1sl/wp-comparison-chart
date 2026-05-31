@@ -1,0 +1,232 @@
+/*
+ * Comparison Chart — Widget Styles
+ * Hardcoded fallbacks are overridden by CSS custom properties set inline
+ * by the Bricks element (--sc-ink, --sc-accent, etc.).
+ * ACSS tokens are the preferred source via var() cascading.
+ */
+
+.sdb-sc-root, .sdb-sc-root *, .sdb-sc-root *::before, .sdb-sc-root *::after {
+  box-sizing: border-box;
+}
+
+.sdb-sc-root {
+  /* Layout tokens — set by Bricks element inline style */
+  --col-w:    var(--sc-col-w, 188px);
+  --label-w:  var(--sc-label-w, 156px);
+  --hdr-h:    90px;
+
+  /* Typography tokens */
+  --ff-body:    var(--sc-font-body,    var(--ff-body,    var(--font-primary,    'Jost', sans-serif)));
+  --ff-heading: var(--sc-font-heading, var(--ff-heading, var(--font-heading,   'Cormorant Garamond', serif)));
+
+  /* Radius tokens */
+  --radius-pill: var(--sc-radius-pill, var(--radius-full, 20px));
+
+  /* Ink — used for CSS-only text colour (JS uses --sc-ink directly) */
+  --ink: var(--sc-ink, #1f2933);
+
+  /* Header text colour — always light since headers are dark */
+  --hdr-text: #ffffff;
+
+  /* Gutter — overridden by Bricks element when full-bleed is on */
+  --gutter: var(--sc-gutter, 24px);
+
+  font-family:     var(--ff-body);
+  background:      transparent;
+  padding:         0;
+  color:           var(--ink);
+  user-select:     none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  overflow-x:      clip;
+  /* Allow hover effects (pulse ring, shadows) to render a little past the
+     clip boundary instead of being hard-cut at the edge. */
+  overflow-clip-margin: 24px;
+  width:           100%;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.sdb-sc-head     { margin:0 0 32px; }
+.sdb-sc-eyebrow  { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--ink); opacity:.6; margin:0 0 8px; }
+.sdb-sc-title    { font-family:var(--ff-heading); font-size:clamp(26px,5vw,42px); font-weight:300; color:var(--ink); margin:0 0 8px; line-height:1.15; }
+.sdb-sc-title em { font-style:italic; }
+.sdb-sc-sub      { font-size:13px; color:var(--ink); opacity:.55; margin:0; font-weight:300; }
+
+/* ── Toggle buttons ──────────────────────────────────────────────────────── */
+.sdb-sc-toggles       { margin:0 0 28px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.sdb-sc-toggles-label { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--ink); opacity:.6; margin-right:4px; flex-shrink:0; }
+
+.sdb-sc-btn {
+  font-family:    var(--ff-body);
+  font-size:      12px;
+  font-weight:    500;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  padding:        7px 16px;
+  border-radius:  var(--radius-pill);
+  border:         1.5px solid transparent;
+  cursor:         pointer;
+  transition:     all .2s;
+  white-space:    nowrap;
+  background:     transparent;
+}
+.sdb-sc-btn.on   { background:rgba(var(--sc-primary-rgb,37,99,235),1); color:#fff; border-color:rgba(var(--sc-primary-rgb,37,99,235),1); }
+.sdb-sc-btn.curr { background:rgba(var(--sc-primary-dark-rgb,15,35,65),1); color:rgba(255,255,255,.65); border-color:transparent; cursor:default; }
+.sdb-sc-btn.off  { color:var(--ink); opacity:.5; border-color:var(--ink); }
+.sdb-sc-btn.off:hover { opacity:.85; }
+
+/* ── Chart scaffold ──────────────────────────────────────────────────────── */
+.sdb-sc-chart { width:100%; }
+
+.sdb-sc-scroll {
+  overflow-x:  hidden; /* JS toggles to auto only when columns exceed available space */
+  overflow-y:  visible;
+  -webkit-overflow-scrolling: touch;
+  /* When overflow-x becomes auto/hidden the browser also clips the Y axis,
+     which would cut off the hover pulse ring and shadows. Pad the scroll box
+     vertically and pull it back with a matching negative margin so effects
+     have room to render without changing the layout. */
+  padding-top:    26px;
+  padding-bottom: 26px;
+  margin-top:     -26px;
+  margin-bottom:  -26px;
+}
+
+/* Full-bleed mode: breaks out of the Bricks container so columns can scroll
+   edge-to-edge, then re-pads with the gutter so content aligns to the grid. */
+.sdb-sc-root--fullbleed .sdb-sc-scroll {
+  margin-left:         calc(50% - 50vw);
+  margin-right:        calc(50% - 50vw);
+  padding-left:        var(--gutter);
+  padding-right:       var(--gutter);
+  scroll-padding-left: var(--gutter);
+}
+
+/* In full-bleed mode the root itself must not clip — the scroll container
+   handles its own overflow. */
+.sdb-sc-root--fullbleed {
+  overflow-x: visible;
+}
+
+.sdb-sc-wrap { position:relative; transition:width .32s cubic-bezier(.4,0,.2,1); }
+
+/* ── Cells ───────────────────────────────────────────────────────────────── */
+.sdb-sc-col-hdr { height:var(--hdr-h); padding:14px 16px 12px; color:var(--hdr-text); display:flex; flex-direction:column; justify-content:flex-end; position:relative; user-select:none; }
+.sdb-sc-cell    { padding:14px 16px; display:flex; align-items:center; overflow:hidden; }
+.sdb-sc-cell:has(.sdb-sc-pills) { align-items:flex-start; }
+.sdb-sc-wrap.measuring .sdb-sc-cell,
+.sdb-sc-wrap.measuring .sdb-sc-lbl-cell { height:auto !important; min-height:0 !important; }
+
+/* ── Frozen (sticky label + current col) ────────────────────────────────── */
+.sdb-sc-frozen { display:flex; position:sticky; left:0; z-index:8; flex-shrink:0; width:max-content; }
+@media (max-width: 768px) { .sdb-sc-frozen { position:static; } }
+
+.sdb-sc-labelcol { width:var(--label-w); flex-shrink:0; background:transparent; }
+.sdb-sc-lbl-hdr  { height:var(--hdr-h); display:flex; align-items:flex-end; padding:0 12px 12px 0; border-bottom:2px solid rgba(0,0,0,.12); }
+.sdb-sc-lbl-hdr span { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:color-mix(in srgb, var(--accent) 50%, transparent); }
+.sdb-sc-lbl-cell { padding:14px 12px 14px 0; display:flex; align-items:center; }
+.sdb-sc-lbl-cell span { font-size:11px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--ink); }
+
+.sdb-sc-currcol { width:var(--col-w); flex-shrink:0; transition:width .32s cubic-bezier(.4,0,.2,1); }
+
+/* ── Draggable columns ───────────────────────────────────────────────────── */
+.sdb-sc-dragcol { position:absolute; top:0; left:0; width:var(--col-w); will-change:transform; transition:opacity .25s ease, width .32s cubic-bezier(.4,0,.2,1); }
+.sdb-sc-dragcol.dragging { z-index:20; box-shadow:0 12px 34px rgba(0,0,0,.22); }
+.sdb-sc-dragcol .sdb-sc-col-hdr { cursor:grab; touch-action:none; -webkit-touch-callout:none; }
+.sdb-sc-dragcol.dragging .sdb-sc-col-hdr { cursor:grabbing; }
+
+/* Hover highlight — lifts the whole column and adds a subtle pulsing ring */
+.sdb-sc-col-hover {
+  z-index: 15;
+  border-radius: 4px;
+  animation: sdbScPulse 1.4s ease-in-out infinite;
+}
+.sdb-sc-col-hover .sdb-sc-cell {
+  background: rgba(var(--sc-secondary-rgb, 37,99,235), .06) !important;
+  transition: background .2s ease;
+}
+/* Current (frozen) column uses flex layout, so give it the ring too */
+.sdb-sc-currcol.sdb-sc-col-hover { z-index: 15; }
+@keyframes sdbScPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--sc-secondary-rgb, 37,99,235), 0), 0 6px 18px rgba(0,0,0,.08); }
+  50%      { box-shadow: 0 0 0 3px rgba(var(--sc-secondary-rgb, 37,99,235), .35), 0 8px 22px rgba(0,0,0,.12); }
+}
+
+/* ── Column header internals ─────────────────────────────────────────────── */
+.sdb-sc-hdr-name  { font-family:var(--ff-heading); font-size:18px; font-weight:500; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sdb-sc-hdr-price { font-size:11px; opacity:.65; margin-top:2px; font-weight:300; }
+.sdb-sc-badge   { position:absolute; top:10px; right:10px; background:rgba(255,255,255,.18); color:#fff; font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; padding:2px 8px; border-radius:10px; }
+
+/* Drag handle: 6 CSS dots in a 2×3 grid, always visible regardless of font support */
+.sdb-sc-handle {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 14px;
+  height: 20px;
+  opacity: .45;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 3px;
+  align-items: center;
+  justify-items: center;
+}
+.sdb-sc-handle::before,
+.sdb-sc-handle::after {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 7px 0 currentColor, 0 14px 0 currentColor,
+              6px 0 0 currentColor, 6px 7px 0 currentColor, 6px 14px 0 currentColor;
+}
+.sdb-sc-handle::after { display: none; }
+
+.sdb-sc-currtag { position:absolute; top:10px; left:12px; font-size:10px; opacity:.75; letter-spacing:.6px; text-transform:uppercase; }
+
+/* ── Cell value renderers ────────────────────────────────────────────────── */
+.sdb-sc-text         { font-size:13px; line-height:1.6; font-family:var(--ff-body); font-weight:300; color:var(--ink); }
+.sdb-sc-text.display { font-family:var(--ff-heading); font-weight:400; }
+.sdb-sc-text.quote   { font-style:italic; color:var(--ink); opacity:.65; }
+
+.sdb-sc-pills { display:flex; flex-wrap:wrap; gap:5px; align-content:flex-start; width:100%; }
+.sdb-sc-pill  { background:rgba(0,0,0,.08); color:var(--ink); border-radius:var(--radius-pill); padding:3px 10px; font-size:11px; font-weight:600; letter-spacing:.2px; white-space:nowrap; height:max-content; }
+
+.sdb-sc-rating { display:flex; gap:5px; align-items:center; }
+.sdb-sc-dot    { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.sdb-sc-star   { font-size:13px; line-height:1; }
+
+.sdb-sc-meter       { display:flex; flex-direction:column; gap:4px; width:100%; }
+.sdb-sc-meter-track { height:6px; border-radius:6px; background:rgba(0,0,0,.08); overflow:hidden; }
+.sdb-sc-meter-fill  { display:block; height:100%; border-radius:6px; transition:width .3s; }
+.sdb-sc-meter-label { font-size:10px; color:var(--ink); opacity:.6; font-weight:500; letter-spacing:.5px; }
+
+.sdb-sc-bool      { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-family:var(--ff-body); }
+.sdb-sc-bool .mark { width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; line-height:1; flex-shrink:0; }
+.sdb-sc-bool.yes  { font-weight:600; }
+.sdb-sc-bool.no   { font-weight:500; color:rgba(0,0,0,.4); }
+.sdb-sc-bool .mark-no { position:relative; }
+.sdb-sc-bool .mark-no::before {
+  content:'';
+  position:absolute;
+  top:50%; left:50%;
+  width:8px; height:1.5px;
+  background:rgba(0,0,0,.3);
+  transform:translate(-50%,-50%);
+  border-radius:1px;
+}
+
+/* ── Empty state placeholder ─────────────────────────────────────────────── */
+.sdb-sc-placeholder     { position:absolute; padding:50px 32px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; animation:sdbScFadeUp .35s ease forwards; }
+.sdb-sc-placeholder .ico { font-size:30px; opacity:.25; }
+.sdb-sc-placeholder .h  { font-family:var(--ff-heading); font-size:21px; font-weight:400; color:var(--ink); opacity:.8; margin:0; }
+.sdb-sc-placeholder .p  { font-size:13px; color:var(--ink); opacity:.5; margin:0; font-weight:300; line-height:1.5; }
+@keyframes sdbScFadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ── Footer hints ────────────────────────────────────────────────────────── */
+.sdb-sc-foot     { margin:20px 0 0; display:flex; flex-wrap:wrap; gap:16px; opacity:.45; }
+.sdb-sc-foot span { font-size:11px; letter-spacing:1px; color:var(--ink); opacity:.5; }
+.sdb-sc-foot .dot { color:var(--ink); opacity:.3; }

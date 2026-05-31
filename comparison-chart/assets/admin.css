@@ -1,0 +1,156 @@
+/* Comparison Chart — Admin Styles */
+
+/* Schema row builder */
+#sdb-sc-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sdb-sc-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 10px 12px;
+  transition: box-shadow 0.15s;
+}
+
+.sdb-sc-row:hover {
+  border-color: #bbb;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07);
+}
+
+.sdb-sc-row.ui-sortable-helper {
+  box-shadow: 0 4px 16px rgba(0,0,0,.14);
+  background: #fff;
+}
+
+.sdb-sc-row-placeholder {
+  height: 52px;
+  background: #f0f6ff;
+  border: 2px dashed #a8c4e8;
+  border-radius: 5px;
+}
+
+.sdb-sc-handle {
+  cursor: grab;
+  color: #aaa;
+  margin-top: 4px;
+  font-size: 18px;
+  flex-shrink: 0;
+  user-select: none;
+}
+.sdb-sc-handle:active { cursor: grabbing; }
+
+.sdb-sc-row-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 1;
+  align-items: flex-end;
+}
+
+.sdb-sc-row-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+
+.sdb-sc-row-fields input[type="text"],
+.sdb-sc-row-fields select {
+  font-size: 13px;
+  padding: 4px 7px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  background: #fff;
+  min-width: 120px;
+}
+
+.sdb-sc-row-fields .sdb-sc-label { min-width: 200px; }
+.sdb-sc-row-fields .sdb-sc-label input { min-width: 200px; }
+
+.sdb-sc-opt-text,
+.sdb-sc-opt-rating,
+.sdb-sc-opt-meter {
+  display: flex;
+  gap: 10px;
+}
+
+.sdb-sc-remove {
+  color: #cc2929;
+  font-size: 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 2px 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  line-height: 1;
+  opacity: .55;
+  transition: opacity .15s;
+}
+.sdb-sc-remove:hover { opacity: 1; }
+
+/* Values table */
+.sdb-sc-values-table th {
+  vertical-align: top;
+  padding-top: 14px !important;
+}
+
+.sdb-sc-type-badge {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 500;
+  background: #eaeaea;
+  color: #666;
+  border-radius: 3px;
+  padding: 1px 6px;
+  letter-spacing: .3px;
+  vertical-align: middle;
+}
+
+/* Star / dot rating field */
+.sdb-sc-rating-field {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.sdb-sc-star-label {
+  cursor: pointer;
+  font-size: 20px;
+  color: #ddd;
+  transition: color .12s, transform .1s;
+  user-select: none;
+}
+.sdb-sc-star-label.active,
+.sdb-sc-star-label.hover {
+  color: #b07d52;
+}
+.sdb-sc-star-label:hover { transform: scale(1.15); }
+
+.sdb-sc-star-clear {
+  font-size: 13px;
+  margin-left: 6px;
+  color: #aaa;
+}
+.sdb-sc-star-clear:hover { color: #c00; }
+
+/* Meter slider */
+.sdb-sc-meter-slider {
+  accent-color: #b07d52;
+}
+.sdb-sc-meter-output {
+  font-size: 13px;
+  color: #555;
+  min-width: 40px;
+}
