@@ -2,6 +2,8 @@
 
 A WordPress plugin that renders an interactive, drag-to-reorder comparison chart for any content type. Works with or without Bricks Builder.
 
+**Author:** Benjamin Keaton
+
 ## How it works
 
 The plugin uses WordPress's native parent/child post hierarchy to structure data:
@@ -23,7 +25,15 @@ When the chart is rendered on a child post's page, that service's column is auto
 
 ## Installation
 
-1. Upload the `comparison-chart` folder to `/wp-content/plugins/`.
+### From a release (recommended)
+
+1. Download `comparison-chart-vX.X.X.zip` from the [Releases page](https://github.com/D1sl/wp-comparison-chart/releases).
+2. In your WordPress admin go to **Plugins → Add New → Upload Plugin**, choose the ZIP, and click **Install Now**.
+3. Activate the plugin, then go to **Settings → Comparison Chart** to configure post types and styling.
+
+### Manual
+
+1. Clone or download the repository and upload the `comparison-chart` folder to `/wp-content/plugins/`.
 2. Activate the plugin from **Plugins** in the WordPress admin.
 3. Go to **Settings → Comparison Chart** to configure post types and styling.
 
