@@ -1,17 +1,17 @@
 <?php
 /**
  * Plugin Name:       Comparison Chart
- * Plugin URI:        https://example.com
+ * Plugin URI:        https://github.com/D1sl/wp-comparison-chart
  * Description:       Interactive, drag-to-reorder comparison chart for any content type. A parent post defines the rows; child posts supply the values. Works with or without Bricks Builder.
- * Version:           2.0.0
- * Author:            Comparison Chart
+ * Version:           2.1.0
+ * Author:            Benjamin Keaton
  * License:           GPL-2.0-or-later
  * Text Domain:       comparison-chart
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SDB_SC_VERSION', '2.0.0' );
+define( 'SDB_SC_VERSION', '2.1.0' );
 define( 'SDB_SC_FILE',    __FILE__ );
 define( 'SDB_SC_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'SDB_SC_URL',     plugin_dir_url( __FILE__ ) );
