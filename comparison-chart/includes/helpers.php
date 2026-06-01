@@ -172,7 +172,6 @@ function sdb_sc_build_config( int $current_id ): ?array {
             'name'  => $header['name'],
             'price' => $header['price'],
             'badge' => $header['badge'] !== '' ? $header['badge'] : null,
-            'url'   => get_permalink( $pid ) ?: '',
         ];
         foreach ( $vals as $k => $v ) {
             $svc[ $k ] = $v;
@@ -326,7 +325,6 @@ function sdb_sc_build_config_for_term( int $term_id, string $taxonomy, int $curr
             'name'  => $header['name'],
             'price' => $header['price'],
             'badge' => $header['badge'] !== '' ? $header['badge'] : null,
-            'url'   => get_permalink( $pid ) ?: '',
         ];
         foreach ( $vals as $k => $v ) {
             $svc[ $k ] = $v;
