@@ -379,9 +379,12 @@
       var corner = isCurrent
         ? (currentLabel ? '<span class="sdb-sc-currtag"><span style="font-size:9px;vertical-align:middle;margin-right:4px">&#10022;</span>' + esc(currentLabel) + '</span>' : "")
         : '<span class="sdb-sc-handle"></span>';
+      var nameHtml = svc.url
+        ? '<a href="' + esc(svc.url) + '" class="sdb-sc-hdr-name-link">' + esc(svc.name) + '</a>'
+        : esc(svc.name);
       hdr.innerHTML = badge + corner +
         '<div style="overflow:hidden">' +
-          '<div class="sdb-sc-hdr-name">' + esc(svc.name)  + '</div>' +
+          '<div class="sdb-sc-hdr-name">' + nameHtml + '</div>' +
           '<div class="sdb-sc-hdr-price">' + esc(svc.price) + '</div>' +
         '</div>';
       container.appendChild(hdr);
