@@ -35,7 +35,7 @@
       syncToHidden();
     });
 
-    $rows.on('input change', '.sdb-sc-label, .sdb-sc-variant, .sdb-sc-max, .sdb-sc-max-meter, .sdb-sc-icon, .sdb-sc-descriptors, .sdb-sc-yes-label, .sdb-sc-no-label', function () {
+    $rows.on('input change', '.sdb-sc-label, .sdb-sc-variant, .sdb-sc-max, .sdb-sc-max-meter, .sdb-sc-icon, .sdb-sc-yes-label, .sdb-sc-no-label', function () {
       // When a label changes and its row has no key yet, generate one.
       var $row = $(this).closest('.sdb-sc-row');
       var $key = $row.find('.sdb-sc-key');
@@ -99,8 +99,6 @@
         row.max  = parseInt($r.find('.sdb-sc-max').val(), 10) || 5;
         var icon = $r.find('.sdb-sc-icon').val();
         if (icon) row.icon = icon;
-        var descriptors = $.trim($r.find('.sdb-sc-descriptors').val());
-        if (descriptors) row.descriptors = descriptors;
       }
       if (type === 'meter') {
         row.max = parseInt($r.find('.sdb-sc-max-meter').val(), 10) || 5;

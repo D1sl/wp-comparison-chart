@@ -186,7 +186,7 @@ class SDB_SC_Values_Metabox {
             </p>
             <table class="form-table sdb-sc-values-table">
                 <?php foreach ( $schema as $row ) : ?>
-                    <?php $this->render_value_row( $row, $stored[ $row['key'] ] ?? null ); ?>
+                    <?php $this->render_value_row( $row, $stored[ $row['key'] ] ?? null, $stored[ $row['key'] . '__desc' ] ?? '' ); ?>
                 <?php endforeach; ?>
             </table>
         </div>
@@ -195,7 +195,7 @@ class SDB_SC_Values_Metabox {
 
     // ── Render: single value row ──────────────────────────────────────────────
 
-    private function render_value_row( array $row, $value ): void {
+    private function render_value_row( array $row, $value, $descriptor = '' ): void {
         $key   = esc_attr( $row['key'] );
         $label = esc_html( $row['label'] );
         $type  = $row['type'];
@@ -209,7 +209,7 @@ class SDB_SC_Values_Metabox {
                 </label>
             </th>
             <td>
-                <?php $this->render_field( $type, $field_name, $value, $row ); ?>
+                <?php $this->render_field( $type, $field_name, $value, $row, $descriptor ); ?>
             </td>
         </tr>
         <?php
@@ -217,7 +217,7 @@ class SDB_SC_Values_Metabox {
 
     // ── Render: field by type ─────────────────────────────────────────────────
 
-    private function render_field( string $type, string $name, $value, array $row ): void {
+    private function render_field( string $type, string $name, $value, array $row, string $descriptor = '' ): void {
         switch ( $type ) {
 
             case 'text':
@@ -266,6 +266,8 @@ class SDB_SC_Values_Metabox {
                 echo '</label>';
                 echo '</div>';
                 echo '<p class="description">Select 1–' . $max . '. Click ✕ to clear.</p>';
+                $desc_field = preg_replace( '/\[([^\]]+)\]$/', '[${1}__desc]', $name );
+                echo '<input type="text" name="' . esc_attr( $desc_field ) . '" value="' . esc_attr( $descriptor ) . '" class="widefat" placeholder="' . esc_attr__( 'Optional label shown below the rating (leave blank to hide)', 'comparison-chart' ) . '" style="margin-top:8px" />';
                 break;
 
             case 'meter':
@@ -346,6 +348,10 @@ class SDB_SC_Values_Metabox {
                         $clean[ $k ] = ! empty( $val );
                         break;
                     case 'rating':
+                        $max         = (int) ( $row['max'] ?? 5 );
+                        $clean[ $k ] = min( $max, max( 0, (float) $val ) );
+                        $clean[ $k . '__desc' ] = sanitize_text_field( wp_unslash( (string) ( $raw[ $k . '__desc' ] ?? '' ) ) );
+                        break;
                     case 'meter':
                         $max         = (int) ( $row['max'] ?? 5 );
                         $clean[ $k ] = min( $max, max( 0, (float) $val ) );

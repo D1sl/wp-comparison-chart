@@ -91,6 +91,9 @@ function sdb_sc_get_values( int $page_id, array $schema ): array {
                 break;
 
             case 'rating':
+                $values[ $k ]            = isset( $val ) ? (float) $val : 0;
+                $values[ $k . '__desc' ] = sanitize_text_field( (string) ( $raw[ $k . '__desc' ] ?? '' ) );
+                break;
             case 'meter':
                 $values[ $k ] = isset( $val ) ? (float) $val : 0;
                 break;
@@ -233,9 +236,6 @@ function sdb_sc_get_schema_from_raw( array $raw ): array {
             $icon = $row['icon'] ?? '';
             if ( in_array( $icon, $allowed_icons, true ) && $icon !== '' ) {
                 $r['icon'] = $icon;
-            }
-            if ( ! empty( $row['descriptors'] ) ) {
-                $r['descriptors'] = sanitize_text_field( $row['descriptors'] );
             }
         }
         if ( $type === 'bool' ) {

@@ -113,15 +113,14 @@ class SDB_SC_Term_Schema_Metabox {
 	// ── Render: single row (reuses the same markup as the post metabox) ───────
 
 	private function render_row( $index, array $row ): void {
-		$key         = esc_attr( $row['key']         ?? '' );
-		$label       = esc_attr( $row['label']       ?? '' );
-		$type        = $row['type']        ?? 'text';
-		$variant     = $row['variant']     ?? '';
-		$max         = $row['max']         ?? 5;
-		$icon        = $row['icon']        ?? '';
-		$descriptors = esc_attr( $row['descriptors'] ?? '' );
-		$yes_label   = esc_attr( $row['yes_label']   ?? '' );
-		$no_label    = esc_attr( $row['no_label']    ?? '' );
+		$key       = esc_attr( $row['key']       ?? '' );
+		$label     = esc_attr( $row['label']     ?? '' );
+		$type      = $row['type']    ?? 'text';
+		$variant   = $row['variant'] ?? '';
+		$max       = $row['max']     ?? 5;
+		$icon      = $row['icon']    ?? '';
+		$yes_label = esc_attr( $row['yes_label'] ?? '' );
+		$no_label  = esc_attr( $row['no_label']  ?? '' );
 		?>
 		<div class="sdb-sc-row" data-index="<?php echo esc_attr( $index ); ?>">
 			<span class="sdb-sc-handle dashicons dashicons-move" title="Drag to reorder"></span>
@@ -163,10 +162,6 @@ class SDB_SC_Term_Schema_Metabox {
 							<option value="" <?php selected( $icon, '' ); ?>><?php esc_html_e( 'Dots', 'comparison-chart' ); ?></option>
 							<option value="star" <?php selected( $icon, 'star' ); ?>><?php esc_html_e( 'Stars (✦)', 'comparison-chart' ); ?></option>
 						</select>
-					</label>
-					<label style="flex:1;min-width:180px">
-						<?php esc_html_e( 'Descriptors', 'comparison-chart' ); ?> <span style="font-weight:400;opacity:.6"><?php esc_html_e( '(optional)', 'comparison-chart' ); ?></span>
-						<input type="text" class="sdb-sc-descriptors" value="<?php echo $descriptors; ?>" placeholder="e.g. Poor, Fair, Good, Great, Excellent" style="width:100%" />
 					</label>
 				</span>
 

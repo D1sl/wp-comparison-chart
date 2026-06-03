@@ -82,15 +82,12 @@
           (on ? ctx.accent : "rgba(0,0,0,0.13)") + '"></span>';
       }
     }
-    var descriptor = "";
-    if (ctx.descriptors) {
-      var parts = ctx.descriptors.split(",");
-      var idx   = Math.max(0, Math.min(Math.round(val) - 1, parts.length - 1));
-      if (val > 0 && parts[idx]) {
-        descriptor = '<span class="sdb-sc-rating-descriptor">' + esc(parts[idx].trim()) + '</span>';
-      }
+    var dots = '<span class="sdb-sc-rating">' + html + '</span>';
+    if (ctx.descriptor) {
+      return '<span class="sdb-sc-rating-wrap">' + dots +
+        '<span class="sdb-sc-rating-descriptor">' + esc(ctx.descriptor) + '</span></span>';
     }
-    return '<span class="sdb-sc-rating-wrap"><span class="sdb-sc-rating">' + html + '</span>' + descriptor + '</span>';
+    return dots;
   };
   RENDERERS.meter = function (v, ctx) {
     var max = ctx.max || 5, val = Number(v) || 0;
@@ -408,9 +405,13 @@
 
         var renderer = RENDERERS[row.type] || RENDERERS.text;
         var ctx      = Object.assign({}, row, {
-          isCurrent: isCurrent,
-          accent:    secondary_c,   // pills, rating, meter, bool use secondary colour
+          isCurrent:  isCurrent,
+          accent:     secondary_c,   // pills, rating, meter, bool use secondary colour
+          descriptor: row.type === 'rating' ? (svc[row.key + '__desc'] || '') : '',
         });
+        if (row.type === 'rating' && !ctx.descriptor) {
+          cell.style.alignItems = 'center';
+        }
         cell.innerHTML = renderer(svc[row.key], ctx);
         container.appendChild(cell);
       });
