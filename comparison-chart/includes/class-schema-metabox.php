@@ -170,7 +170,7 @@ class SDB_SC_Schema_Metabox {
                             <option value="star" <?php selected( $icon, 'star' ); ?>>Stars (✦)</option>
                         </select>
                     </label>
-                </span>
+                </div>
 
                 <div class="sdb-sc-opt-meter" style="<?php echo $type !== 'meter' ? 'display:none' : ''; ?>">
                     <label>
