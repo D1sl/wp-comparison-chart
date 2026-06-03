@@ -82,7 +82,15 @@
           (on ? ctx.accent : "rgba(0,0,0,0.13)") + '"></span>';
       }
     }
-    return '<span class="sdb-sc-rating">' + html + '</span>';
+    var descriptor = "";
+    if (ctx.descriptors) {
+      var parts = ctx.descriptors.split(",");
+      var idx   = Math.max(0, Math.min(Math.round(val) - 1, parts.length - 1));
+      if (val > 0 && parts[idx]) {
+        descriptor = '<span class="sdb-sc-rating-descriptor">' + esc(parts[idx].trim()) + '</span>';
+      }
+    }
+    return '<span class="sdb-sc-rating-wrap"><span class="sdb-sc-rating">' + html + '</span>' + descriptor + '</span>';
   };
   RENDERERS.meter = function (v, ctx) {
     var max = ctx.max || 5, val = Number(v) || 0;
@@ -93,12 +101,14 @@
       '<span class="sdb-sc-meter-label">' + val + '/' + max + '</span></span>';
   };
   RENDERERS.bool = function (v, ctx) {
+    var yesText = (ctx.yes_label && ctx.yes_label.trim()) || "Yes";
+    var noText  = (ctx.no_label  && ctx.no_label.trim())  || "No";
     if (v) {
       return '<span class="sdb-sc-bool yes" style="color:' + ctx.accent + '">' +
-        '<span class="mark" style="background:' + ctx.accent + ';color:#fff">✓</span>Yes</span>';
+        '<span class="mark" style="background:' + ctx.accent + ';color:#fff">✓</span>' + esc(yesText) + '</span>';
     }
     return '<span class="sdb-sc-bool no">' +
-      '<span class="mark mark-no" style="border:1.5px solid rgba(0,0,0,0.15)"></span>No</span>';
+      '<span class="mark mark-no" style="border:1.5px solid rgba(0,0,0,0.15)"></span>' + esc(noText) + '</span>';
   };
 
   // ── Config resolution ─────────────────────────────────────────────────────

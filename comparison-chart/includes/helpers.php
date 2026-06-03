@@ -234,6 +234,17 @@ function sdb_sc_get_schema_from_raw( array $raw ): array {
             if ( in_array( $icon, $allowed_icons, true ) && $icon !== '' ) {
                 $r['icon'] = $icon;
             }
+            if ( ! empty( $row['descriptors'] ) ) {
+                $r['descriptors'] = sanitize_text_field( $row['descriptors'] );
+            }
+        }
+        if ( $type === 'bool' ) {
+            if ( ! empty( $row['yes_label'] ) ) {
+                $r['yes_label'] = sanitize_text_field( $row['yes_label'] );
+            }
+            if ( ! empty( $row['no_label'] ) ) {
+                $r['no_label'] = sanitize_text_field( $row['no_label'] );
+            }
         }
         $clean[] = $r;
     }

@@ -35,7 +35,7 @@
       syncToHidden();
     });
 
-    $rows.on('input change', '.sdb-sc-label, .sdb-sc-variant, .sdb-sc-max, .sdb-sc-max-meter, .sdb-sc-icon', function () {
+    $rows.on('input change', '.sdb-sc-label, .sdb-sc-variant, .sdb-sc-max, .sdb-sc-max-meter, .sdb-sc-icon, .sdb-sc-descriptors, .sdb-sc-yes-label, .sdb-sc-no-label', function () {
       // When a label changes and its row has no key yet, generate one.
       var $row = $(this).closest('.sdb-sc-row');
       var $key = $row.find('.sdb-sc-key');
@@ -67,6 +67,7 @@
     $row.find('.sdb-sc-opt-text').toggle(type === 'text');
     $row.find('.sdb-sc-opt-rating').toggle(type === 'rating');
     $row.find('.sdb-sc-opt-meter').toggle(type === 'meter');
+    $row.find('.sdb-sc-opt-bool').toggle(type === 'bool');
   }
 
   // ── Reindex rows after remove/sort ────────────────────────────────────────
@@ -98,9 +99,17 @@
         row.max  = parseInt($r.find('.sdb-sc-max').val(), 10) || 5;
         var icon = $r.find('.sdb-sc-icon').val();
         if (icon) row.icon = icon;
+        var descriptors = $.trim($r.find('.sdb-sc-descriptors').val());
+        if (descriptors) row.descriptors = descriptors;
       }
       if (type === 'meter') {
         row.max = parseInt($r.find('.sdb-sc-max-meter').val(), 10) || 5;
+      }
+      if (type === 'bool') {
+        var yesLabel = $.trim($r.find('.sdb-sc-yes-label').val());
+        var noLabel  = $.trim($r.find('.sdb-sc-no-label').val());
+        if (yesLabel) row.yes_label = yesLabel;
+        if (noLabel)  row.no_label  = noLabel;
       }
 
       schema.push(row);

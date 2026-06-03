@@ -198,9 +198,11 @@
 .sdb-sc-pills { display:flex; flex-wrap:wrap; gap:5px; align-content:flex-start; width:100%; }
 .sdb-sc-pill  { background:rgba(0,0,0,.08); color:var(--ink); border-radius:var(--radius-pill); padding:3px 10px; font-size:11px; font-weight:600; letter-spacing:.2px; white-space:nowrap; height:max-content; }
 
-.sdb-sc-rating { display:flex; gap:5px; align-items:center; }
-.sdb-sc-dot    { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
-.sdb-sc-star   { font-size:13px; line-height:1; }
+.sdb-sc-rating-wrap       { display:flex; flex-direction:column; gap:4px; }
+.sdb-sc-rating            { display:flex; gap:5px; align-items:center; }
+.sdb-sc-rating-descriptor { font-size:10px; font-style:italic; color:var(--ink); opacity:.55; line-height:1; }
+.sdb-sc-dot               { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.sdb-sc-star              { font-size:13px; line-height:1; }
 
 .sdb-sc-meter       { display:flex; flex-direction:column; gap:4px; width:100%; }
 .sdb-sc-meter-track { height:6px; border-radius:6px; background:rgba(0,0,0,.08); overflow:hidden; }
