@@ -116,8 +116,7 @@
 
 /* ── Cells ───────────────────────────────────────────────────────────────── */
 .sdb-sc-col-hdr { height:var(--hdr-h); padding:14px 16px 12px; color:var(--hdr-text); display:flex; flex-direction:column; justify-content:flex-end; position:relative; user-select:none; }
-.sdb-sc-cell    { padding:14px 16px; display:flex; align-items:center; overflow:hidden; }
-.sdb-sc-cell:has(.sdb-sc-pills) { align-items:flex-start; }
+.sdb-sc-cell    { padding:14px 16px; display:flex; align-items:flex-start; overflow:hidden; }
 .sdb-sc-wrap.measuring .sdb-sc-cell,
 .sdb-sc-wrap.measuring .sdb-sc-lbl-cell { height:auto !important; min-height:0 !important; }
 
@@ -128,7 +127,7 @@
 .sdb-sc-labelcol { width:var(--label-w); flex-shrink:0; background:var(--label-bg); }
 .sdb-sc-lbl-hdr  { height:var(--hdr-h); display:flex; align-items:flex-end; padding:0 12px 12px 0; border-bottom:2px solid rgba(0,0,0,.12); }
 .sdb-sc-lbl-hdr span { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:color-mix(in srgb, var(--accent) 50%, transparent); }
-.sdb-sc-lbl-cell { padding:14px 12px 14px 0; display:flex; align-items:center; }
+.sdb-sc-lbl-cell { padding:14px 12px 14px 0; display:flex; align-items:flex-start; }
 .sdb-sc-lbl-cell span { font-size:11px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--ink); }
 
 .sdb-sc-currcol { width:var(--col-w); flex-shrink:0; transition:width .32s cubic-bezier(.4,0,.2,1); }
