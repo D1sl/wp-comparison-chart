@@ -65,6 +65,7 @@
 }
 
 .sdb-sc-row-fields input[type="text"],
+.sdb-sc-row-fields input[type="number"],
 .sdb-sc-row-fields select {
   font-size: 13px;
   padding: 4px 7px;
@@ -72,6 +73,11 @@
   border: 1px solid #ccc;
   background: #fff;
   min-width: 120px;
+  box-sizing: border-box;
+}
+
+.sdb-sc-row-fields input[type="number"] {
+  min-width: 0; /* number inputs are sized by their explicit width */
 }
 
 .sdb-sc-row-fields .sdb-sc-label { min-width: 200px; }
@@ -79,9 +85,11 @@
 
 .sdb-sc-opt-text,
 .sdb-sc-opt-rating,
-.sdb-sc-opt-meter {
+.sdb-sc-opt-meter,
+.sdb-sc-opt-bool {
   display: flex;
   gap: 10px;
+  align-items: flex-end;
 }
 
 .sdb-sc-remove {

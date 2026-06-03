@@ -408,6 +408,9 @@
           isCurrent:  isCurrent,
           accent:     secondary_c,   // pills, rating, meter, bool use secondary colour
           descriptor: row.type === 'rating' ? (svc[row.key + '__desc'] || '') : '',
+          // Child-level bool label overrides — fall back to schema-level, then defaults
+          yes_label:  row.type === 'bool' ? (svc[row.key + '__yes'] || row.yes_label || '') : '',
+          no_label:   row.type === 'bool' ? (svc[row.key + '__no']  || row.no_label  || '') : '',
         });
         if (row.type === 'rating' && !ctx.descriptor) {
           cell.style.alignItems = 'center';

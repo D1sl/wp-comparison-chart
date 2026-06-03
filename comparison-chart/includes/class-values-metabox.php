@@ -186,7 +186,11 @@ class SDB_SC_Values_Metabox {
             </p>
             <table class="form-table sdb-sc-values-table">
                 <?php foreach ( $schema as $row ) : ?>
-                    <?php $this->render_value_row( $row, $stored[ $row['key'] ] ?? null, $stored[ $row['key'] . '__desc' ] ?? '' ); ?>
+                    <?php $this->render_value_row( $row, $stored[ $row['key'] ] ?? null, [
+                        'desc'      => $stored[ $row['key'] . '__desc' ] ?? '',
+                        'yes_label' => $stored[ $row['key'] . '__yes'  ] ?? '',
+                        'no_label'  => $stored[ $row['key'] . '__no'   ] ?? '',
+                    ] ); ?>
                 <?php endforeach; ?>
             </table>
         </div>
@@ -195,7 +199,7 @@ class SDB_SC_Values_Metabox {
 
     // ── Render: single value row ──────────────────────────────────────────────
 
-    private function render_value_row( array $row, $value, $descriptor = '' ): void {
+    private function render_value_row( array $row, $value, array $extras = [] ): void {
         $key   = esc_attr( $row['key'] );
         $label = esc_html( $row['label'] );
         $type  = $row['type'];
@@ -209,7 +213,7 @@ class SDB_SC_Values_Metabox {
                 </label>
             </th>
             <td>
-                <?php $this->render_field( $type, $field_name, $value, $row, $descriptor ); ?>
+                <?php $this->render_field( $type, $field_name, $value, $row, $extras ); ?>
             </td>
         </tr>
         <?php
@@ -217,7 +221,7 @@ class SDB_SC_Values_Metabox {
 
     // ── Render: field by type ─────────────────────────────────────────────────
 
-    private function render_field( string $type, string $name, $value, array $row, string $descriptor = '' ): void {
+    private function render_field( string $type, string $name, $value, array $row, array $extras = [] ): void {
         switch ( $type ) {
 
             case 'text':
@@ -267,7 +271,7 @@ class SDB_SC_Values_Metabox {
                 echo '</div>';
                 echo '<p class="description">Select 1–' . $max . '. Click ✕ to clear.</p>';
                 $desc_field = preg_replace( '/\[([^\]]+)\]$/', '[${1}__desc]', $name );
-                echo '<input type="text" name="' . esc_attr( $desc_field ) . '" value="' . esc_attr( $descriptor ) . '" class="widefat" placeholder="' . esc_attr__( 'Optional label shown below the rating (leave blank to hide)', 'comparison-chart' ) . '" style="margin-top:8px" />';
+                echo '<input type="text" name="' . esc_attr( $desc_field ) . '" value="' . esc_attr( $extras['desc'] ?? '' ) . '" class="widefat" placeholder="' . esc_attr__( 'Optional label shown below the rating (leave blank to hide)', 'comparison-chart' ) . '" style="margin-top:8px" />';
                 break;
 
             case 'meter':
@@ -280,11 +284,22 @@ class SDB_SC_Values_Metabox {
                 break;
 
             case 'bool':
-                $checked = ! empty( $value ) ? 'checked' : '';
-                echo '<label style="display:flex;align-items:center;gap:8px;cursor:pointer">';
+                $checked      = ! empty( $value ) ? 'checked' : '';
+                $yes_override = esc_attr( $extras['yes_label'] ?? '' );
+                $no_override  = esc_attr( $extras['no_label']  ?? '' );
+                $yes_field    = preg_replace( '/\[([^\]]+)\]$/', '[${1}__yes]', $name );
+                $no_field     = preg_replace( '/\[([^\]]+)\]$/', '[${1}__no]',  $name );
+                $schema_yes   = esc_attr( $row['yes_label'] ?? '' ) ?: 'Yes';
+                $schema_no    = esc_attr( $row['no_label']  ?? '' ) ?: 'No';
+                echo '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px">';
                 echo '<input type="checkbox" name="' . esc_attr( $name ) . '" value="1" ' . $checked . ' style="width:18px;height:18px" />';
-                echo '<span>Yes</span>';
+                echo '<span>' . esc_html( $yes_override ?: $schema_yes ) . '</span>';
                 echo '</label>';
+                echo '<div style="display:flex;gap:8px">';
+                echo '<input type="text" name="' . esc_attr( $yes_field ) . '" value="' . $yes_override . '" class="" placeholder="' . esc_attr( $schema_yes ) . '" style="width:120px" />';
+                echo '<input type="text" name="' . esc_attr( $no_field )  . '" value="' . $no_override  . '" class="" placeholder="' . esc_attr( $schema_no  ) . '" style="width:120px" />';
+                echo '</div>';
+                echo '<p class="description">' . esc_html__( 'Override the Yes / No labels for this item. Leave blank to use the schema defaults.', 'comparison-chart' ) . '</p>';
                 break;
         }
     }
@@ -345,7 +360,9 @@ class SDB_SC_Values_Metabox {
 
                 switch ( $row['type'] ) {
                     case 'bool':
-                        $clean[ $k ] = ! empty( $val );
+                        $clean[ $k ]         = ! empty( $val );
+                        $clean[ $k . '__yes' ] = sanitize_text_field( wp_unslash( (string) ( $raw[ $k . '__yes' ] ?? '' ) ) );
+                        $clean[ $k . '__no'  ] = sanitize_text_field( wp_unslash( (string) ( $raw[ $k . '__no'  ] ?? '' ) ) );
                         break;
                     case 'rating':
                         $max         = (int) ( $row['max'] ?? 5 );

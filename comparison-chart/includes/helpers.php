@@ -87,7 +87,9 @@ function sdb_sc_get_values( int $page_id, array $schema ): array {
 
         switch ( $row['type'] ) {
             case 'bool':
-                $values[ $k ] = ! empty( $val );
+                $values[ $k ]          = ! empty( $val );
+                $values[ $k . '__yes' ] = sanitize_text_field( (string) ( $raw[ $k . '__yes' ] ?? '' ) );
+                $values[ $k . '__no'  ] = sanitize_text_field( (string) ( $raw[ $k . '__no'  ] ?? '' ) );
                 break;
 
             case 'rating':
