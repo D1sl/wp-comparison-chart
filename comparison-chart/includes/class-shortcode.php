@@ -29,12 +29,17 @@ class SDB_SC_Shortcode {
 				'id'       => 0,
 				'term'     => '',
 				'taxonomy' => '',
+				'label_bg' => '',
 			],
 			$atts,
 			'comparison_chart'
 		);
 
 		// ── Explicit taxonomy mode ────────────────────────────────────────────
+		$overrides = array_filter( [
+			'color_label_bg' => sanitize_text_field( $atts['label_bg'] ),
+		] );
+
 		if ( $atts['term'] !== '' ) {
 			$taxonomy = sanitize_key( $atts['taxonomy'] );
 			$term_slug = sanitize_text_field( $atts['term'] );
@@ -60,7 +65,7 @@ class SDB_SC_Shortcode {
 			$config     = sdb_sc_build_config_for_term( $term->term_id, $taxonomy, $current_id );
 			if ( ! $config ) return '';
 
-			return $this->build_html( $config );
+			return $this->build_html( $config, $overrides );
 		}
 
 		// ── Explicit post-hierarchy mode (id= given) ──────────────────────────
@@ -87,18 +92,18 @@ class SDB_SC_Shortcode {
 			return ''; // nothing to compare
 		}
 
-		return $this->build_html( $config );
+		return $this->build_html( $config, $overrides );
 	}
 
 	// ── Shared HTML output ────────────────────────────────────────────────────
 
-	private function build_html( array $config ): string {
+	private function build_html( array $config, array $overrides = [] ): string {
 		// Ensure front-end assets are loaded (registered in class-assets.php)
 		wp_enqueue_style( 'sdb-sc-widget' );
 		wp_enqueue_script( 'sdb-sc-widget' );
 
-		// Apply global style settings
-		$style = SDB_SC_Settings::get_style();
+		// Apply global style settings, then apply any per-shortcode overrides.
+		$style = array_merge( SDB_SC_Settings::get_style(), $overrides );
 
 		if ( ! empty( $style['column_width'] ) ) $config['columnWidth'] = (int) $style['column_width'];
 		if ( ! empty( $style['label_width'] ) )  $config['labelWidth']  = (int) $style['label_width'];
@@ -136,6 +141,7 @@ class SDB_SC_Shortcode {
 			'color_primary'   => '--sc-primary',
 			'color_secondary' => '--sc-secondary',
 			'color_ink'       => '--sc-ink',
+			'color_label_bg'  => '--sc-label-bg',
 			'font_body'       => '--sc-font-body',
 			'font_heading'    => '--sc-font-heading',
 			'pill_radius'     => '--sc-radius-pill',

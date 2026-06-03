@@ -25,6 +25,10 @@
   /* Ink — used for CSS-only text colour (JS uses --sc-ink directly) */
   --ink: var(--sc-ink, #1f2933);
 
+  /* Label column background — set to match your page background so the sticky
+     label column occludes scrolling columns correctly */
+  --label-bg: var(--sc-label-bg, transparent);
+
   /* Header text colour — always light since headers are dark */
   --hdr-text: #ffffff;
 
@@ -121,7 +125,7 @@
 .sdb-sc-frozen { display:flex; position:sticky; left:0; z-index:8; flex-shrink:0; width:max-content; }
 @media (max-width: 768px) { .sdb-sc-frozen { position:static; } }
 
-.sdb-sc-labelcol { width:var(--label-w); flex-shrink:0; background:transparent; }
+.sdb-sc-labelcol { width:var(--label-w); flex-shrink:0; background:var(--label-bg); }
 .sdb-sc-lbl-hdr  { height:var(--hdr-h); display:flex; align-items:flex-end; padding:0 12px 12px 0; border-bottom:2px solid rgba(0,0,0,.12); }
 .sdb-sc-lbl-hdr span { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:color-mix(in srgb, var(--accent) 50%, transparent); }
 .sdb-sc-lbl-cell { padding:14px 12px 14px 0; display:flex; align-items:center; }

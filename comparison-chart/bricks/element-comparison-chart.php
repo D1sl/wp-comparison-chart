@@ -98,6 +98,13 @@ class Bricks_Element_Sdb_Service_Comparison extends \Bricks\Element {
             'description' => esc_html__( 'Row label and cell text colour.', 'sdb-sc' ),
         ];
 
+        $this->controls['color_label_bg'] = [
+            'tab'         => 'content',
+            'label'       => esc_html__( 'Label column background', 'sdb-sc' ),
+            'type'        => 'color',
+            'description' => esc_html__( 'Background of the sticky row-label column. Set to match your page or section background so labels correctly cover scrolling columns.', 'sdb-sc' ),
+        ];
+
         // ── Border radius ─────────────────────────────────────────────────────
         $this->controls['_section_radius'] = [
             'tab'   => 'content',
@@ -200,6 +207,7 @@ class Bricks_Element_Sdb_Service_Comparison extends \Bricks\Element {
             'color_primary'   => '--sc-primary',
             'color_secondary' => '--sc-secondary',
             'color_ink'       => '--sc-ink',
+            'color_label_bg'  => '--sc-label-bg',
             'font_body'       => '--sc-font-body',
             'font_heading'    => '--sc-font-heading',
             'pill_radius'     => '--sc-radius-pill',

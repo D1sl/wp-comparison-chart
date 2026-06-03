@@ -232,6 +232,13 @@ class SDB_SC_Settings {
 							</td>
 						</tr>
 						<tr>
+							<th scope="row"><label for="sc_color_label_bg"><?php esc_html_e( 'Label column background', 'comparison-chart' ); ?></label></th>
+							<td>
+								<input type="text" id="sc_color_label_bg" class="sdb-sc-color-field" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[style][color_label_bg]" value="<?php echo esc_attr( $style['color_label_bg'] ); ?>" />
+								<p class="description"><?php esc_html_e( 'Background of the sticky row-label column. Set this to match your page background so labels correctly cover scrolling columns. Leave blank for transparent.', 'comparison-chart' ); ?></p>
+							</td>
+						</tr>
+						<tr>
 							<th scope="row"><label for="sc_font_body"><?php esc_html_e( 'Body font family', 'comparison-chart' ); ?></label></th>
 							<td>
 								<input type="text" id="sc_font_body" class="regular-text" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[style][font_body]" value="<?php echo esc_attr( $style['font_body'] ); ?>" />
@@ -349,6 +356,7 @@ class SDB_SC_Settings {
 			'color_primary'   => '#2563eb', // generic blue
 			'color_secondary' => '',
 			'color_ink'       => '#1f2933',
+			'color_label_bg'  => '',
 			'font_body'       => 'inherit',
 			'font_heading'    => 'inherit',
 			'pill_radius'     => '20px',
