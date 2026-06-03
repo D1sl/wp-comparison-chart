@@ -140,7 +140,7 @@ class SDB_SC_Term_Schema_Metabox {
 					</select>
 				</label>
 
-				<span class="sdb-sc-opt-text" style="<?php echo $type !== 'text' ? 'display:none' : ''; ?>">
+				<div class="sdb-sc-opt-text" style="<?php echo $type !== 'text' ? 'display:none' : ''; ?>">
 					<label>
 						<?php esc_html_e( 'Variant', 'comparison-chart' ); ?>
 						<select class="sdb-sc-variant">
@@ -149,12 +149,12 @@ class SDB_SC_Term_Schema_Metabox {
 							<option value="quote" <?php selected( $variant, 'quote' ); ?>><?php esc_html_e( 'Quote (italic)', 'comparison-chart' ); ?></option>
 						</select>
 					</label>
-				</span>
+				</div>
 
-				<span class="sdb-sc-opt-rating" style="<?php echo $type !== 'rating' ? 'display:none' : ''; ?>">
+				<div class="sdb-sc-opt-rating" style="<?php echo $type !== 'rating' ? 'display:none' : ''; ?>">
 					<label>
 						<?php esc_html_e( 'Max', 'comparison-chart' ); ?>
-						<input type="number" class="sdb-sc-max small-text" value="<?php echo (int) $max; ?>" min="1" max="10" style="width:55px" />
+						<input type="number" class="sdb-sc-max" value="<?php echo (int) $max; ?>" min="1" max="10" />
 					</label>
 					<label>
 						<?php esc_html_e( 'Icon', 'comparison-chart' ); ?>
@@ -163,25 +163,25 @@ class SDB_SC_Term_Schema_Metabox {
 							<option value="star" <?php selected( $icon, 'star' ); ?>><?php esc_html_e( 'Stars (✦)', 'comparison-chart' ); ?></option>
 						</select>
 					</label>
-				</span>
+				</div>
 
-				<span class="sdb-sc-opt-meter" style="<?php echo $type !== 'meter' ? 'display:none' : ''; ?>">
+				<div class="sdb-sc-opt-meter" style="<?php echo $type !== 'meter' ? 'display:none' : ''; ?>">
 					<label>
 						<?php esc_html_e( 'Max', 'comparison-chart' ); ?>
-						<input type="number" class="sdb-sc-max-meter small-text" value="<?php echo (int) $max; ?>" min="1" max="10" style="width:55px" />
+						<input type="number" class="sdb-sc-max-meter" value="<?php echo (int) $max; ?>" min="1" max="10" />
 					</label>
-				</span>
+				</div>
 
-				<span class="sdb-sc-opt-bool" style="<?php echo $type !== 'bool' ? 'display:none' : ''; ?>">
+				<div class="sdb-sc-opt-bool" style="<?php echo $type !== 'bool' ? 'display:none' : ''; ?>">
 					<label>
 						<?php esc_html_e( 'Yes label', 'comparison-chart' ); ?>
-						<input type="text" class="sdb-sc-yes-label small-text" value="<?php echo $yes_label; ?>" placeholder="Yes" style="width:80px" />
+						<input type="text" class="sdb-sc-yes-label" value="<?php echo $yes_label; ?>" placeholder="Yes" />
 					</label>
 					<label>
 						<?php esc_html_e( 'No label', 'comparison-chart' ); ?>
-						<input type="text" class="sdb-sc-no-label small-text" value="<?php echo $no_label; ?>" placeholder="No" style="width:80px" />
+						<input type="text" class="sdb-sc-no-label" value="<?php echo $no_label; ?>" placeholder="No" />
 					</label>
-				</span>
+				</div>
 			</div>
 
 			<button type="button" class="sdb-sc-remove button-link-delete" title="Remove row">✕</button>

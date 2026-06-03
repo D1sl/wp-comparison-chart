@@ -58,6 +58,7 @@
   flex-direction: column;
   gap: 3px;
   font-size: 11px;
+  line-height: 1;
   font-weight: 600;
   color: #555;
   text-transform: uppercase;
@@ -85,6 +86,10 @@
 
 .sdb-sc-row-fields .sdb-sc-label { min-width: 200px; }
 .sdb-sc-row-fields .sdb-sc-label input { min-width: 200px; }
+.sdb-sc-row-fields .sdb-sc-max,
+.sdb-sc-row-fields .sdb-sc-max-meter { width: 55px; }
+.sdb-sc-row-fields .sdb-sc-yes-label,
+.sdb-sc-row-fields .sdb-sc-no-label { width: 80px; }
 
 .sdb-sc-opt-text,
 .sdb-sc-opt-rating,
