@@ -27,7 +27,7 @@
 
   /* Label column background — set to match your page background so the sticky
      label column occludes scrolling columns correctly */
-  --label-bg: var(--sc-label-bg, transparent);
+  --label-bg: var(--sc-label-bg, #ffffff);
 
   /* Header text colour — always light since headers are dark */
   --hdr-text: #ffffff;

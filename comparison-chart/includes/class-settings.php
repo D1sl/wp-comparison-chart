@@ -356,7 +356,7 @@ class SDB_SC_Settings {
 			'color_primary'   => '#2563eb', // generic blue
 			'color_secondary' => '',
 			'color_ink'       => '#1f2933',
-			'color_label_bg'  => '',
+			'color_label_bg'  => '#ffffff',
 			'font_body'       => 'inherit',
 			'font_heading'    => 'inherit',
 			'pill_radius'     => '20px',
