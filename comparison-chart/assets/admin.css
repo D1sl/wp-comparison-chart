@@ -50,7 +50,7 @@
   flex-wrap: wrap;
   gap: 10px;
   flex: 1;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 .sdb-sc-row-fields label {
@@ -92,7 +92,7 @@
 .sdb-sc-opt-bool {
   display: flex;
   gap: 10px;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 .sdb-sc-remove {
