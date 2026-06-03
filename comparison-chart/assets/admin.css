@@ -68,12 +68,15 @@
 .sdb-sc-row-fields input[type="number"],
 .sdb-sc-row-fields select {
   font-size: 13px;
-  padding: 4px 7px;
+  height: 30px;
+  padding: 0 7px;
   border-radius: 3px;
   border: 1px solid #ccc;
   background: #fff;
   min-width: 120px;
   box-sizing: border-box;
+  vertical-align: middle;
+  line-height: 30px;
 }
 
 .sdb-sc-row-fields input[type="number"] {
