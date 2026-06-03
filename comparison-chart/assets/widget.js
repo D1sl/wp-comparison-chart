@@ -139,6 +139,16 @@
     var svcById  = {};
     SERVICES.forEach(function (s) { svcById[s.id] = s; });
 
+    // Per-row alignment flag for rating rows: if ANY column supplies a
+    // descriptor, the whole row top-aligns so the dots line up across columns.
+    // If no column has one, the row stays vertically centered.
+    var rowHasDescriptor = ROWS.map(function (row) {
+      if (row.type !== "rating") return false;
+      return SERVICES.some(function (s) {
+        return (s[row.key + "__desc"] || "") !== "";
+      });
+    });
+
     // ── Colour system ─────────────────────────────────────────────────────
     // Everything derives from two inputs: primary and secondary (optional).
     // parseColour() resolves any CSS value (including var() chains) via canvas.
@@ -412,7 +422,9 @@
           yes_label:  row.type === 'bool' ? (svc[row.key + '__yes'] || row.yes_label || '') : '',
           no_label:   row.type === 'bool' ? (svc[row.key + '__no']  || row.no_label  || '') : '',
         });
-        if (row.type === 'rating' && !ctx.descriptor) {
+        // Center rating cells only when NO column in the row has a descriptor;
+        // otherwise keep the row top-aligned so dots line up across columns.
+        if (row.type === 'rating' && !rowHasDescriptor[ri]) {
           cell.style.alignItems = 'center';
         }
         cell.innerHTML = renderer(svc[row.key], ctx);
