@@ -65,7 +65,7 @@ class SDB_SC_Settings {
 			}
 		}
 		if ( empty( $clean['post_types'] ) ) {
-			$clean['post_types'] = [ 'page' ];
+			$clean['post_types'] = [];
 		}
 
 		// Taxonomies (taxonomy mode)
@@ -133,16 +133,11 @@ class SDB_SC_Settings {
 							<fieldset>
 								<?php foreach ( $eligible as $slug => $label ) :
 									$checked  = in_array( $slug, $saved_pts, true ) ? 'checked' : '';
-									$disabled = $slug === 'page' ? 'disabled' : '';
 									?>
 									<label style="display:block;margin-bottom:8px">
-										<input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[post_types][]" value="<?php echo esc_attr( $slug ); ?>" <?php echo esc_attr( $checked ); ?> <?php echo esc_attr( $disabled ); ?> />
+										<input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[post_types][]" value="<?php echo esc_attr( $slug ); ?>" <?php echo esc_attr( $checked ); ?> />
 										<strong><?php echo esc_html( $label ); ?></strong>
 										<code style="font-size:11px;opacity:.7"><?php echo esc_html( $slug ); ?></code>
-										<?php if ( $slug === 'page' ) : ?>
-											<em style="font-size:11px;color:#888"><?php esc_html_e( '(always enabled)', 'comparison-chart' ); ?></em>
-											<input type="hidden" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[post_types][]" value="page" />
-										<?php endif; ?>
 									</label>
 								<?php endforeach; ?>
 							</fieldset>
@@ -335,10 +330,7 @@ class SDB_SC_Settings {
 		$opts = get_option( self::OPTION_KEY, [] );
 		$pts  = isset( $opts['post_types'] ) && is_array( $opts['post_types'] )
 			? $opts['post_types']
-			: [ 'page' ];
-		if ( ! in_array( 'page', $pts, true ) ) {
-			$pts[] = 'page';
-		}
+			: [];
 		return $pts;
 	}
 
