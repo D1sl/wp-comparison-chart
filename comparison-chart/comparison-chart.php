@@ -7,6 +7,7 @@
  * Author:            Benjamin Keaton
  * License:           GPL-2.0-or-later
  * Text Domain:       comparison-chart
+ * Update URI:        https://updates.specialtydentalbrands.com/comparison-chart
  */
 
 defined( 'ABSPATH' ) || exit;
